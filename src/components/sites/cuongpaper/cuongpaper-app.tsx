@@ -18,6 +18,7 @@ import {
 } from './templates-data';
 import { renderPaper, calcPaperDimensions } from './draw-paper';
 import { Icon } from './icons';
+import { NsNLogo } from './logo';
 import { CursorTrail } from './cursor-trail';
 import { playClickSound, playRustleSound, playPrintSound } from './audio';
 import { NSN_APP_META } from '@/lib/meta';
@@ -343,22 +344,25 @@ img { width: ${dims.widthMm}mm; height: ${dims.heightMm}mm; }
       {/* App Header */}
       <header className="app-header flex-shrink-0">
         <div
-          className="header-logo-section cursor-pointer"
+          className="header-logo-section cursor-pointer group"
           onClick={() => {
             playClickSound();
             setActiveTab('custom');
           }}
         >
-          <Icon name="templates" className="logo-icon" />
+          <div className="relative flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
+            <NsNLogo className="w-9 h-9 drop-shadow-sm" />
+          </div>
           <div className="flex flex-col">
-            <h1 className="text-xl font-extrabold tracking-tight flex items-center gap-1.5">
-              <span className="text-[var(--paperme-accent)]">NsN</span>_GiayIn
+            <h1 className="text-xl font-extrabold tracking-tight flex items-center gap-1 leading-tight">
+              <span className="text-[var(--paperme-accent)]">NsN</span>
+              <span className="text-[var(--paperme-primary)]">_GiayIn</span>
             </h1>
-            <span className="text-[10px] text-[var(--paperme-text-muted)] font-medium -mt-1 hidden sm:inline-block">
+            <span className="text-[10px] text-[var(--paperme-text-muted)] font-bold -mt-0.5 hidden sm:inline-block tracking-wide">
               Thiết kế & Tải Mẫu Giấy In
             </span>
           </div>
-          <span className="hidden md:inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--paperme-primary-light)] text-[var(--paperme-primary)] ml-2">
+          <span className="hidden md:inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--paperme-primary-light)] text-[var(--paperme-primary)] ml-1 border border-[var(--paperme-primary)]/15">
             v{NSN_APP_META.version}
           </span>
         </div>
@@ -570,8 +574,9 @@ img { width: ${dims.widthMm}mm; height: ${dims.heightMm}mm; }
         <div className="flex-1 overflow-auto p-6 bg-[var(--paperme-bg)]">
           <div className="max-w-3xl mx-auto w-full p-6 bg-[var(--paperme-card)] rounded-xl border border-[var(--paperme-border)] shadow-sm text-sm">
             <div className="flex justify-between items-center mb-6 border-b border-[var(--paperme-border)] pb-4">
-              <h2 className="text-xl font-bold flex items-center gap-2">
-                ℹ️ Thông tin phiên bản & Tác giả
+              <h2 className="text-xl font-bold flex items-center gap-2.5">
+                <NsNLogo className="w-6 h-6 inline-block" />
+                Thông tin phiên bản & Tác giả
               </h2>
               <span className="text-xs font-mono px-2.5 py-1 rounded bg-[var(--paperme-primary-light)] text-[var(--paperme-primary)] font-bold">
                 v{NSN_APP_META.version}

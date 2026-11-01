@@ -4,6 +4,18 @@ Toàn bộ các thay đổi đáng chú ý của dự án **NsN_GiayIn (AI Websi
 
 ---
 
+## [1.0.2] - 2026-11-01 (GMT+7)
+
+### Đã thêm & Cải tiến
+- **Thiết kế lại Logo NsN_GiayIn:**
+  - Biểu tượng squircle cao cấp chuyển sắc xanh sapphire (`#1E3A8A` -> `#3B82F6`) với trang giấy gấp góc origami, đường kẻ căn lề đỏ coral và con dấu chữ **N** (Nguyễn Sơn Nam) độc quyền.
+  - Component vector [`NsNLogo`](file:///C:/Users/Admin/Projects/ai-website-cloner-template/src/components/sites/cuongpaper/logo.tsx) sắc nét trên mọi độ phân giải.
+- **Thêm icon vào tiêu đề trang (Document Title):**
+  - Thêm biểu tượng `📄` vào tiêu đề tab trình duyệt: `📄 NsN_GiayIn - Thiết kế & Tải Mẫu Giấy In Chất Lượng Cao | Custom Paper Templates`.
+  - Cập nhật favicon SVG đồng bộ tại `src/app/icon.svg` và `public/favicon.svg` tương thích tự động với base path GitHub Pages.
+
+---
+
 ## [1.0.1] - 2026-11-01 (GMT+7)
 
 ### Đã sửa & Cải tiến

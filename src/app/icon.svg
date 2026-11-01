@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <linearGradient id="nsnFavBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" />
+      <stop offset="100%" stop-color="#3B82F6" />
+    </linearGradient>
+    <linearGradient id="nsnFavAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF7A00" />
+      <stop offset="100%" stop-color="#E2725B" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="44" height="44" rx="12" fill="url(#nsnFavBg)" />
+  <rect x="2" y="2" width="44" height="44" rx="12" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+  <path d="M 12 11 C 12 9.5 13.2 8.5 14.5 8.5 L 28.5 8.5 L 36 16 L 36 36.5 C 36 38 34.8 39.5 33.5 39.5 L 14.5 39.5 C 13.2 39.5 12 38 12 36.5 Z" fill="#FFFFFF"/>
+  <path d="M 28.5 8.5 L 28.5 14.5 C 28.5 15.5 29.5 16 30.5 16 L 36 16 Z" fill="#E2E8F0"/>
+  <path d="M 28.5 16 L 36 16" stroke="#CBD5E1" stroke-width="1"/>
+  <line x1="18" y1="13" x2="18" y2="35" stroke="#E2725B" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="22" y1="18" x2="32" y2="18" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="22" y1="23" x2="32" y2="23" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="22" y1="28" x2="30" y2="28" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="33.5" cy="33.5" r="7" fill="url(#nsnFavAccent)" />
+  <circle cx="33.5" cy="33.5" r="7" stroke="#FFFFFF" stroke-width="1.2" />
+  <path d="M 31 36.5 L 31 30.5 L 36 36.5 L 36 30.5" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

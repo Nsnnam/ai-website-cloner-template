@@ -6,7 +6,7 @@ Trải nghiệm trực tiếp trên GitHub: **[https://nsnnam.github.io/ai-websi
 
 | | |
 |---|---|
-| **Phiên bản** | `v1.0.1` |
+| **Phiên bản** | `v1.0.2` |
 | **Ngày phát hành** | 2026-11-01 |
 | **Tác giả** | [Nguyễn Sơn Nam (Nsnnam / NamNS)](https://github.com/Nsnnam) |
 | **Quy chuẩn** | [NSN App Standard](https://github.com/Nsnnam/nsn-app-standard) |

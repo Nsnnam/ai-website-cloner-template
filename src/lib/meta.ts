@@ -39,7 +39,7 @@ export interface AppMeta {
 export const NSN_APP_META: AppMeta = {
   name: "NsN_GiayIn - Thiết kế & Tải Mẫu Giấy In Chất Lượng Cao",
   appCode: "NSN_GIAYIN",
-  version: "1.0.1",
+  version: "1.0.2",
   date: "2026-11-01",
   author: "Nguyễn Sơn Nam (Nsnnam)",
   authorShort: "NSN",
@@ -60,6 +60,15 @@ export const NSN_APP_META: AppMeta = {
     qrPath: "/docs/coffee-qr.jpg",
   },
   changelog: [
+    {
+      version: "1.0.2",
+      date: "2026-11-01",
+      changes: [
+        "Thiết kế lại Logo NsN_GiayIn sang trọng: Biểu tượng squircle xanh sapphire với trang giấy gấp góc origami, đường kẻ căn lề đỏ coral và con dấu chữ N độc quyền",
+        "Thêm icon 📄 vào tiêu đề trang web (document title) trên tab trình duyệt",
+        "Cập nhật favicon SVG chuẩn với cơ chế tự động tương thích đường dẫn tĩnh trên GitHub Pages",
+      ],
+    },
     {
       version: "1.0.1",
       date: "2026-11-01",

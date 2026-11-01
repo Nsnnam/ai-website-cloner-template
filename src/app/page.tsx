@@ -1,9 +1,15 @@
+import { Metadata } from 'next';
+import { CuongPaperApp } from '@/components/sites/cuongpaper/cuongpaper-app';
+
+export const metadata: Metadata = {
+  title: 'CuongPaPer - Thiết kế & Tải Mẫu Giấy In Chất Lượng Cao | Custom Paper Templates',
+  description:
+    'Tự tay thiết kế và tải xuống 50+ mẫu giấy in thông dụng như giấy kẻ ngang, ô ly Seyes, chấm bi dot grid, khuông nhạc, isometric và ghi chú Cornell. Song ngữ, chỉnh kích cỡ mm chuẩn in ấn.',
+  icons: {
+    icon: '/sites/cuongpaper/favicon.svg',
+  },
+};
+
 export default function Home() {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <p className="text-muted-foreground">
-        Clone target not yet built. Run <code className="font-mono text-foreground">/clone-website</code> to start.
-      </p>
-    </main>
-  );
+  return <CuongPaperApp />;
 }

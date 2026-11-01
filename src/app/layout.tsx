@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Nunito } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const nunito = Nunito({
+  subsets: ["latin", "vietnamese"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  variable: "--paperme-font",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Website Clone",
-  description: "Pixel-perfect website clone",
+  title: "CuongPaPer - Thiết kế & Tải Mẫu Giấy In Chất Lượng Cao | Custom Paper Templates",
+  description:
+    "Tự tay thiết kế và tải xuống 50+ mẫu giấy in thông dụng như giấy kẻ ngang, ô ly Seyes, chấm bi dot grid, khuông nhạc, isometric và ghi chú Cornell. Song ngữ, chỉnh kích cỡ mm chuẩn in ấn.",
+  icons: {
+    icon: "/sites/cuongpaper/favicon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -23,11 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="vi" className={`${nunito.variable} h-full antialiased`} suppressHydrationWarning>
+      <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );
 }

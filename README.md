@@ -1,3 +1,9 @@
+> [!IMPORTANT]
+> **Dự án chính thức đã được tách thành repository độc lập:**
+> * 📦 **Repository độc lập:** [https://github.com/Nsnnam/nsn-giayin](https://github.com/Nsnnam/nsn-giayin)
+> * 🌐 **Web trực tiếp (Live GitHub Pages):** [https://nsnnam.github.io/nsn-giayin/](https://nsnnam.github.io/nsn-giayin/)
+> * 🛠️ **Skill tự động hóa:** Dùng kỹ năng `website-cloner` để bóc tách và clone bất kỳ website nào thành repo riêng độc lập.
+
 # NsN_GiayIn - Thiết Kế & Tải Mẫu Giấy In Chất Lượng Cao
 
 Ứng dụng web trực quan giúp tự tay tùy biến kích thước mm, căn lề, khoảng cách dòng và tải xuống hơn 50 mẫu giấy in chất lượng cao (giấy kẻ ngang, ô ly tiểu học, chấm bi bullet journal, khuông nhạc, isometric, Cornell notes...).

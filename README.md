@@ -1,154 +1,114 @@
-<div align="center">
+# CuongPaPer - Thiết Kế & Tải Mẫu Giấy In Chất Lượng Cao
 
-# AI Website Cloner Template
+Ứng dụng web trực quan giúp tự tay tùy biến kích thước mm, căn lề, khoảng cách dòng và tải xuống hơn 50 mẫu giấy in chất lượng cao (giấy kẻ ngang, ô ly tiểu học, chấm bi bullet journal, khuông nhạc, isometric, Cornell notes...).
 
-### Clone any website with one command
+Trải nghiệm trực tiếp trên GitHub: **[https://nsnnam.github.io/ai-website-cloner-template/](https://nsnnam.github.io/ai-website-cloner-template/)**
 
-Give your AI coding agent a URL and watch it recreate the website as a clean Next.js app.
-
-**Best results with [Claude Code](https://docs.anthropic.com/en/docs/claude-code) + Opus 5.5. Also supports Codex, Cursor, and OpenCode.**
-
-[![Use this template](https://img.shields.io/badge/Use_this_template-Create_your_copy-2ea44f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JCodesMore/ai-website-cloner-template/generate) [![Discord](https://img.shields.io/badge/Join_the_community-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/hrTSX5yTpB)
-
-[Quick Start](#quick-start) · [Watch Demo](#demo) · [Supported Platforms](#supported-platforms)
-
-<a href="https://github.com/JCodesMore/ai-website-cloner-template/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a> <a href="https://github.com/JCodesMore/ai-website-cloner-template"><img src="https://img.shields.io/github/stars/JCodesMore/ai-website-cloner-template?style=flat" alt="Stars" /></a> <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/JCodesMore/ai-website-cloner-template/badges/token-badge.json" alt="tokens" />
-
-  <a href="https://trendshift.io/repositories/24302?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-24302" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/24302" alt="JCodesMore%2Fai-website-cloner-template | Trendshift" width="250" height="55" /></a> <a href="https://www.star-history.com/jcodesmore/ai-website-cloner-template/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template&amp;theme=dark" /><source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template" /><img alt="Star History Global Rank" src="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template" width="216" height="55" /></picture></a>
-
-</div>
+| | |
+|---|---|
+| **Phiên bản** | `v1.0.0` |
+| **Ngày phát hành** | 2026-11-01 |
+| **Tác giả** | [Nguyễn Sơn Nam (Nsnnam / NamNS)](https://github.com/Nsnnam) |
+| **Quy chuẩn** | [NSN App Standard](https://github.com/Nsnnam/nsn-app-standard) |
+| **Múi giờ** | GMT+7 (`Asia/Ho_Chi_Minh`) |
+| **Repository** | [https://github.com/Nsnnam/ai-website-cloner-template](https://github.com/Nsnnam/ai-website-cloner-template) |
+| **Live Web App** | [https://nsnnam.github.io/ai-website-cloner-template/](https://nsnnam.github.io/ai-website-cloner-template/) |
 
 ---
 
-## Demo
+## Tính năng nổi bật
 
-[![Watch the demo](docs/design-references/comparison.png)](https://youtu.be/O669pVZ_qr0)
+- **Hơn 50 mẫu giấy in chuyên dụng:**
+  - *Giấy thông dụng:* Kẻ ngang, kẻ có lề dọc, ô vuông Caro, chấm bi Dot grid, lưới milimet hồng, trắng tinh, khuông nhạc ngũ tuyến, Guitar TAB, Ukulele TAB, Guitar Chord, luyện chữ nghệ thuật, lưới lục giác tổ ong, ô ly học sinh Seyes Pháp.
+  - *Làm bài tập & Giáo dục:* Ô Pinyin, Tianzi Pinyin, giấy tập viết Nhật Bản, bài tập toán chia cột, luyện chữ mẫu Đức Lineatur.
+  - *Luyện chữ Hán & Thư pháp:* Mễ tự cách (MiZiGe), Hồi cung cách (HuiGongGe), Cửu cung cách (JiuGongGe), Điền tự cách (Chinese Tianzi).
+  - *Kiến trúc & Kỹ thuật:* Lưới kiến trúc chuyên nghiệp, bản vẽ nội thất la bàn, lưới 3D Isometric, phối cảnh Perspective 2 điểm tụ.
+  - *Hội họa & Storyboard:* Khung kịch bản phân cảnh Storyboard, phác thảo tỷ lệ vàng Fibonacci, giấy vẽ tự do thiếu nhi.
+  - *Học tập & Ghi chú:* Sơ đồ tư duy Mindmap, ghi chú Cornell Notes, thẻ ghi nhớ từ vựng Flashcard, bảng ghi chép lỗi sai Mistakes Log.
+  - *Kế hoạch & Sổ tay:* Đồng hồ 24h Chronodex, kế hoạch tuần Weekly Planner, theo dõi thói quen Habit Tracker, biên bản họp Meeting Notes, To-Do List.
+- **Engine vẽ Vector Canvas chuẩn milimet (mm):**
+  - Tùy chỉnh khoảng cách dòng (1mm - 30mm), độ đậm nét vẽ (0.1mm - 2.5mm), màu sắc dòng kẻ (bảng màu chọn sẵn hoặc mã HEX cá nhân).
+  - Khổ giấy tiêu chuẩn: A4, A5, A3, B4, B5, Letter, Legal, Tabloid, Executive hoặc tùy chọn kích thước chiều rộng/cao mm bất kỳ.
+  - Thước đo milimet bao quanh trang giấy và hiển thị số dòng thực tế.
+- **Xuất file đa định dạng chuẩn in ấn:**
+  - **Xuất file PDF Vector 300 DPI:** Sử dụng `jsPDF`, in ấn cực nét không vỡ hạt.
+  - **Xuất ảnh PNG / JPG:** Độ phân giải cao 300 DPI.
+  - **Xuất file Word (DOCX):** Nhúng nguyên khổ giấy mm vào Microsoft Word.
+  - **In trực tiếp (Print):** In ngay từ trình duyệt.
+- **Trải nghiệm tương tác sinh động:**
+  - Hiệu ứng bụi mực bám đuôi chuột (`cursor-trail-canvas`).
+  - Âm thanh cơ học Web Audio (tiếng click, tiếng sột soạt giấy, tiếng máy in).
+  - Giao diện Sáng / Tối (Dark / Light mode).
+  - Song ngữ Tiếng Việt & Tiếng Anh (VI / EN).
+  - Hoàn tác / Làm lại (Undo / Redo stack).
 
-> Click the image above to watch the full demo on YouTube.
+---
 
-## Quick Start
+## Hướng dẫn sử dụng nhanh
 
-### 1. Set up your project
+1. Truy cập trực tiếp tại: **[https://nsnnam.github.io/ai-website-cloner-template/](https://nsnnam.github.io/ai-website-cloner-template/)**.
+2. Chọn mẫu giấy mong muốn từ bảng điều khiển bên trái hoặc thư viện mẫu bên phải.
+3. Điều chỉnh khổ giấy, hướng giấy, khoảng cách dòng, độ đậm nét và lề theo ý thích.
+4. Bấm **PDF** để tải file in chuẩn vector 300 DPI hoặc **In trực tiếp**.
+5. *Lưu ý khi in:* Trong cửa sổ in của máy in, chọn mục **Actual Size (100%)** để tỷ lệ kích thước milimet in ra giấy chính xác 100%.
 
-**Recommended: ask your agent.** Paste this into Codex, Claude Code, or your coding agent:
+---
 
-```text
-Set up https://github.com/JCodesMore/ai-website-cloner-template
-as a standalone project in a new folder on my computer.
-Ask me where to put it. Clone the repository, remove its origin remote,
-install dependencies, and run npm run check. Leave it ready for me
-to clone a website.
-```
+## Cài đặt & Chạy trên máy nội bộ
 
-**Or create your own GitHub repository:**
-
-[![Use this template](https://img.shields.io/badge/Use_this_template-Create_your_copy-2ea44f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JCodesMore/ai-website-cloner-template/generate)
-
-Give it a name and click **Create repository**. Then give your agent the new repository's link and ask it to clone it onto your computer, install dependencies, and run `npm run check`.
-
-### 2. Clone a website
-
-Open the project in your agent with browser access enabled. In Claude Code or Cursor, run:
-
-```text
-/clone-website https://example.com
-```
-
-Replace the URL with the website you want to recreate. Once it's built, ask your agent for any changes you want.
-
-## Supported Platforms
-
-| Agent                                                         | Status                     |
-| ------------------------------------------------------------- | -------------------------- |
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | **Recommended** — Opus 5.5 |
-| [Codex CLI](https://github.com/openai/codex)                  | Supported                  |
-| [OpenCode](https://opencode.ai/)                              | Supported                  |
-| [Cursor](https://cursor.com/)                                 | Supported                  |
-
-## Prerequisites
-
-- [Node.js](https://nodejs.org/) 24+
-- An AI coding agent (see [Supported Platforms](#supported-platforms))
-
-## Tech Stack
-
-- **Next.js 16** — App Router, React 19, TypeScript strict
-- **shadcn/ui** — Base UI primitives + Tailwind CSS v4
-- **Tailwind CSS v4** — oklch design tokens
-- **Lucide React** — default icons (replaced by extracted SVGs during cloning)
-
-## How It Works
-
-The `/clone-website` skill follows four steps:
-
-1. **Map** — map source URLs to local routes and preserve existing work.
-2. **Observe** — inspect desktop/mobile pages, extract real assets and fonts, and exercise alternate states.
-3. **Build** — implement editable components and working interactions; delegate independent sections when useful.
-4. **Compare** — review source and local pages at matched sizes/states, repair visible differences, and run the production check.
-
-Framer pages and animated sites have focused inspection guidance for responsive variants, media, sticky scenes, and scroll/time-driven motion. Direct HTTP or asset tools handle extraction where practical; browser comparisons establish appearance and behavior. Deliverables include route mappings, run instructions, comparison screenshots, and any remaining gaps.
-
-## Use Cases
-
-- **Platform migration** — rebuild a site you own from WordPress/Webflow/Squarespace into a modern Next.js codebase
-- **Lost source code** — your site is live but the repo is gone, the developer left, or the stack is legacy. Get the code back in a modern format
-- **Learning** — deconstruct how production sites achieve specific layouts, animations, and responsive behavior by working with real code
-
-## Not Intended For
-
-- **Phishing or impersonation** — this project must not be used for deceptive purposes, impersonation, or any activity that breaks the law.
-- **Passing off someone's design as your own** — logos, brand assets, and original copy belong to their owners.
-- **Violating terms of service** — some sites explicitly prohibit scraping or reproduction. Check first.
-
-## Project Structure
-
-```
-src/
-  app/              # Next.js routes
-  components/       # React components
-    ui/             # shadcn/ui primitives
-    sites/<site>/   # Source-specific components and extracted SVGs
-  lib/utils.ts      # cn() utility
-  types/            # TypeScript interfaces
-  hooks/            # Custom React hooks
-public/
-  sites/<site>/     # Source-specific images, fonts, videos, and other assets
-docs/
-  research/<site>/  # Page brief, asset map, and inspection evidence
-  design-references/ # Screenshots
-.agents/skills/
-  clone-website/    # Canonical skill and inspection reference
-.claude/commands/
-  clone-website.md  # Thin Claude Code bridge
-AGENTS.md           # Agent instructions (single source of truth)
-CLAUDE.md           # Claude Code config (imports AGENTS.md)
-```
-
-## Commands
+Yêu cầu máy tính đã cài đặt **Node.js 22+**:
 
 ```bash
-npm run dev    # Start dev server
-npm run build  # Production build
-npm run lint   # ESLint check
-npm run typecheck # TypeScript check
-npm run check  # Run lint + typecheck + build
+# Clone mã nguồn
+git clone https://github.com/Nsnnam/ai-website-cloner-template.git
+cd ai-website-cloner-template
+
+# Cài đặt thư viện
+npm install
+
+# Khởi chạy môi trường phát triển
+npm run dev
+
+# Kiểm tra chất lượng mã nguồn
+npm run check
 ```
 
-### If using docker
+---
 
-```bash
-docker compose up app --build # build and run the app
-docker compose up dev --build # run the app in dev mode on port 3001
-```
+## Cấu trúc thư mục
 
-## Agent Support
+| Đường dẫn | Mô tả |
+|---|---|
+| `src/app/` | Routing Next.js (Trang chủ `/` và Route `/mau-giay-in/`) |
+| `src/components/sites/cuongpaper/` | Giao diện CuongPaPer, Audio effects, Cursor trail, Canvas draw engine |
+| `src/lib/meta.ts` | Khai báo metadata chuẩn NSN App Standard |
+| `src/lib/date-utils.ts` | Tiện ích thời gian định dạng GMT+7 |
+| `public/docs/coffee-qr.jpg` | Mã QR VietQR ủng hộ tác giả |
+| `.github/workflows/deploy.yml` | CI/CD GitHub Actions tự động build & deploy GitHub Pages |
+| `CHANGELOG.md` | Lịch sử phiên bản chi tiết |
+| `SUPPORT.md` | Thông tin ủng hộ & mời cà phê tác giả |
 
-The project keeps one portable Agent Skill at `.agents/skills/clone-website/`. Codex, Cursor, and OpenCode read it directly. Claude Code uses the small command bridge at `.claude/commands/clone-website.md` so `/clone-website` and its arguments continue to work without exposing a duplicate skill to the other agents.
+---
 
-## Star History
+## ☕ Ủng hộ tác giả
 
-![Star History Chart](docs/assets/star-history.png)
+Nếu ứng dụng giúp bạn tiết kiệm thời gian, hãy ủng hộ tác giả một tách cà phê nhé!
 
-## License
+<p align="left">
+  <img src="docs/coffee-qr.jpg" alt="QR VietQR ủng hộ - BIDV 8855989777" width="180" />
+</p>
 
-MIT
+| | |
+|---|---|
+| **Chủ tài khoản** | **NGUYEN SON NAM** |
+| **Số tài khoản** | **8855989777** |
+| **Ngân hàng** | **BIDV — PGD Nguyễn Tất Thành** |
+| **Cách chuyển** | Quét mã **VietQR** ở trên để chuyển khoản nhanh |
+
+*Cảm ơn bạn đã luôn ủng hộ!*
+
+---
+
+## Giấy phép
+
+Phát hành theo giấy phép MIT. Bản quyền thuộc về [Nguyễn Sơn Nam](https://github.com/Nsnnam).

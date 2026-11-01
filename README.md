@@ -1,4 +1,4 @@
-# CuongPaPer - Thiết Kế & Tải Mẫu Giấy In Chất Lượng Cao
+# NsN_GiayIn - Thiết Kế & Tải Mẫu Giấy In Chất Lượng Cao
 
 Ứng dụng web trực quan giúp tự tay tùy biến kích thước mm, căn lề, khoảng cách dòng và tải xuống hơn 50 mẫu giấy in chất lượng cao (giấy kẻ ngang, ô ly tiểu học, chấm bi bullet journal, khuông nhạc, isometric, Cornell notes...).
 
@@ -6,7 +6,7 @@ Trải nghiệm trực tiếp trên GitHub: **[https://nsnnam.github.io/ai-websi
 
 | | |
 |---|---|
-| **Phiên bản** | `v1.0.0` |
+| **Phiên bản** | `v1.0.1` |
 | **Ngày phát hành** | 2026-11-01 |
 | **Tác giả** | [Nguyễn Sơn Nam (Nsnnam / NamNS)](https://github.com/Nsnnam) |
 | **Quy chuẩn** | [NSN App Standard](https://github.com/Nsnnam/nsn-app-standard) |

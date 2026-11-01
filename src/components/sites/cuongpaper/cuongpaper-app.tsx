@@ -50,6 +50,7 @@ export const CuongPaperApp: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [linesCount, setLinesCount] = useState<number>(0);
+  const [canvasDims, setCanvasDims] = useState<{ width: number; height: number }>({ width: 794, height: 1123 });
   const [copiedStk, setCopiedStk] = useState<boolean>(false);
   const [isClient, setIsClient] = useState<boolean>(false);
 
@@ -59,10 +60,12 @@ export const CuongPaperApp: React.FC = () => {
   useEffect(() => {
     setIsClient(true);
     const savedTheme =
+      (localStorage.getItem('nsn-giayin-theme') as ThemeMode) ||
       (localStorage.getItem('nsn-cuongpaper-theme') as ThemeMode) ||
       (localStorage.getItem('paperme_theme') as ThemeMode) ||
       'light';
     const savedLang =
+      (localStorage.getItem('nsn-giayin-lang') as Language) ||
       (localStorage.getItem('nsn-cuongpaper-lang') as Language) ||
       (localStorage.getItem('paperme_lang') as Language) ||
       'vi';
@@ -71,6 +74,7 @@ export const CuongPaperApp: React.FC = () => {
     document.documentElement.setAttribute('data-theme', savedTheme);
 
     const savedSettings =
+      localStorage.getItem('nsn-giayin-settings') ||
       localStorage.getItem('nsn-cuongpaper-settings') ||
       localStorage.getItem('paperme_settings');
     if (savedSettings) {
@@ -94,13 +98,13 @@ export const CuongPaperApp: React.FC = () => {
   useEffect(() => {
     if (!isClient) return;
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('nsn-cuongpaper-theme', theme);
+    localStorage.setItem('nsn-giayin-theme', theme);
   }, [theme, isClient]);
 
   // Update lang in localStorage
   useEffect(() => {
     if (!isClient) return;
-    localStorage.setItem('nsn-cuongpaper-lang', lang);
+    localStorage.setItem('nsn-giayin-lang', lang);
   }, [lang, isClient]);
 
   // Push history and update settings
@@ -111,7 +115,7 @@ export const CuongPaperApp: React.FC = () => {
         setHistoryStack((stack) => [...stack.slice(-20), prev]);
         setRedoStack([]);
         if (typeof window !== 'undefined') {
-          localStorage.setItem('nsn-cuongpaper-settings', JSON.stringify(next));
+          localStorage.setItem('nsn-giayin-settings', JSON.stringify(next));
         }
         return next;
       });
@@ -127,7 +131,7 @@ export const CuongPaperApp: React.FC = () => {
     setHistoryStack((s) => s.slice(0, -1));
     setRedoStack((r) => [...r, settings]);
     setSettings(prev);
-    localStorage.setItem('nsn-cuongpaper-settings', JSON.stringify(prev));
+    localStorage.setItem('nsn-giayin-settings', JSON.stringify(prev));
   }, [historyStack, settings]);
 
   const handleRedo = useCallback(() => {
@@ -137,32 +141,46 @@ export const CuongPaperApp: React.FC = () => {
     setRedoStack((r) => r.slice(0, -1));
     setHistoryStack((s) => [...s, settings]);
     setSettings(next);
-    localStorage.setItem('nsn-cuongpaper-settings', JSON.stringify(next));
+    localStorage.setItem('nsn-giayin-settings', JSON.stringify(next));
   }, [redoStack, settings]);
 
-  // Canvas render effect
-  useEffect(() => {
+  // Redraw paper canvas helper
+  const drawCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     try {
       const count = renderPaper(canvas, settings, 96, {
-        showMarginsGuide: true,
+        showMarginsGuide: showRulers,
         hideHeader: false,
         lang,
       });
       setLinesCount(count);
+      setCanvasDims({ width: canvas.width, height: canvas.height });
     } catch (e) {
       console.error('Error rendering paper canvas:', e);
     }
   }, [settings, lang, showRulers]);
+
+  // Canvas render effect
+  useEffect(() => {
+    drawCanvas();
+  }, [drawCanvas]);
+
+  // Font readiness redraw to ensure crisp Vietnamese typography
+  useEffect(() => {
+    if (typeof document !== 'undefined' && document.fonts) {
+      document.fonts.ready.then(() => {
+        drawCanvas();
+      });
+    }
+  }, [drawCanvas]);
 
   const t = translations[lang] || translations.vi;
 
   // Format Status Label
   let sizeLabel: string = settings.paperSize;
   if (sizeLabel === 'Custom') {
-    sizeLabel = `${t.customPaperSize || 'Custom'} (${settings.customWidth} × ${settings.customHeight} mm)`;
+    sizeLabel = `${t.customPaperSize || 'Khổ tùy chọn'} (${settings.customWidth} × ${settings.customHeight} mm)`;
   } else {
     sizeLabel = `${sizeLabel} (${standardPaperSizes[sizeLabel] || ''})`;
   }
@@ -240,7 +258,7 @@ export const CuongPaperApp: React.FC = () => {
           const docHtml = `
 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
 <head>
-<title>CuongPaPer Template</title>
+<title>NsN_GiayIn Template</title>
 <!--[if gte mso 9]>
 <xml>
   <w:WordDocument>
@@ -313,12 +331,17 @@ img { width: ${dims.widthMm}mm; height: ${dims.heightMm}mm; }
     templateGroups[grp].push(item);
   });
 
+  // Calculated wrapper dimensions to fix paper centering and avoid bottom drop
+  const scale = zoom / 100;
+  const wrapperWidth = Math.max(100, Math.round(canvasDims.width * scale));
+  const wrapperHeight = Math.max(100, Math.round(canvasDims.height * scale));
+
   return (
-    <div className="min-h-screen bg-[var(--paperme-bg)] text-[var(--paperme-text)] flex flex-col justify-between">
+    <div id="app" className="h-screen max-h-screen overflow-hidden flex flex-col bg-[var(--paperme-bg)] text-[var(--paperme-text)]">
       <CursorTrail theme={theme} />
 
       {/* App Header */}
-      <header className="app-header">
+      <header className="app-header flex-shrink-0">
         <div
           className="header-logo-section cursor-pointer"
           onClick={() => {
@@ -327,11 +350,16 @@ img { width: ${dims.widthMm}mm; height: ${dims.heightMm}mm; }
           }}
         >
           <Icon name="templates" className="logo-icon" />
-          <h1>
-            <span>Cuong</span>PaPer
-          </h1>
-          <span className="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--paperme-primary-light)] text-[var(--paperme-primary)] ml-2">
-            NSN Standard
+          <div className="flex flex-col">
+            <h1 className="text-xl font-extrabold tracking-tight flex items-center gap-1.5">
+              <span className="text-[var(--paperme-accent)]">NsN</span>_GiayIn
+            </h1>
+            <span className="text-[10px] text-[var(--paperme-text-muted)] font-medium -mt-1 hidden sm:inline-block">
+              Thiết kế & Tải Mẫu Giấy In
+            </span>
+          </div>
+          <span className="hidden md:inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--paperme-primary-light)] text-[var(--paperme-primary)] ml-2">
+            v{NSN_APP_META.version}
           </span>
         </div>
 
@@ -471,64 +499,66 @@ img { width: ${dims.widthMm}mm; height: ${dims.heightMm}mm; }
 
       {/* TAB CONTENT: HƯỚNG DẪN (GUIDE) */}
       {activeTab === 'guide' && (
-        <div className="max-w-4xl mx-auto w-full p-6 my-6 bg-[var(--paperme-card)] rounded-xl border border-[var(--paperme-border)] shadow-sm">
-          <div className="flex justify-between items-center mb-6 border-b border-[var(--paperme-border)] pb-4">
-            <h2 className="text-xl font-bold flex items-center gap-2">
-              📖 Hướng dẫn sử dụng CuongPaPer
-            </h2>
-            <button
-              onClick={() => setActiveTab('custom')}
-              className="text-sm px-3 py-1.5 rounded bg-[var(--paperme-primary)] text-white font-medium hover:opacity-90"
-            >
-              Vào Tự thiết kế &rarr;
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-            <div className="space-y-4">
-              <div className="p-4 rounded-lg bg-[var(--paperme-bg)] border border-[var(--paperme-border)]">
-                <h3 className="font-bold text-base mb-2 text-[var(--paperme-primary)]">
-                  1. Chọn loại mẫu giấy
-                </h3>
-                <p className="text-[var(--paperme-text-muted)]">
-                  Khám phá hơn 50 mẫu giấy phong phú: kẻ ngang, ô ly tiểu học Seyes, chấm bi Dot grid,
-                  khuông nhạc TAB, lưới vẽ 3D Isometric, phối cảnh, sơ đồ tư duy Mindmap, giấy Cornell notes,
-                  luyện chữ Calligraphy, thời khóa biểu và sổ tay To-Do.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-lg bg-[var(--paperme-bg)] border border-[var(--paperme-border)]">
-                <h3 className="font-bold text-base mb-2 text-[var(--paperme-primary)]">
-                  2. Khổ giấy & Tùy biến kích thước
-                </h3>
-                <p className="text-[var(--paperme-text-muted)]">
-                  Hỗ trợ đầy đủ các khổ giấy tiêu chuẩn: <strong>A4, A5, A3, B4, B5, Letter, Legal</strong> hoặc
-                  nhập kích thước tùy chọn theo chuẩn milimet (mm) chính xác tuyệt đối.
-                </p>
-              </div>
+        <div className="flex-1 overflow-auto p-6 bg-[var(--paperme-bg)]">
+          <div className="max-w-4xl mx-auto w-full p-6 bg-[var(--paperme-card)] rounded-xl border border-[var(--paperme-border)] shadow-sm">
+            <div className="flex justify-between items-center mb-6 border-b border-[var(--paperme-border)] pb-4">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                📖 Hướng dẫn sử dụng NsN_GiayIn
+              </h2>
+              <button
+                onClick={() => setActiveTab('custom')}
+                className="text-sm px-3 py-1.5 rounded bg-[var(--paperme-primary)] text-white font-medium hover:opacity-90"
+              >
+                Vào Tự thiết kế &rarr;
+              </button>
             </div>
 
-            <div className="space-y-4">
-              <div className="p-4 rounded-lg bg-[var(--paperme-bg)] border border-[var(--paperme-border)]">
-                <h3 className="font-bold text-base mb-2 text-[var(--paperme-primary)]">
-                  3. Căn chỉnh lề & Đường kẻ
-                </h3>
-                <p className="text-[var(--paperme-text-muted)]">
-                  Tùy chỉnh khoảng cách dòng (spacing mm), độ đậm nét vẽ (lineWidth mm), màu sắc nét vẽ theo
-                  bảng màu thời trang hoặc mã hex cá nhân. Tùy biến lề Trên, Dưới, Trái, Phải thuận tiện cho đóng gáy sổ.
-                </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+              <div className="space-y-4">
+                <div className="p-4 rounded-lg bg-[var(--paperme-bg)] border border-[var(--paperme-border)]">
+                  <h3 className="font-bold text-base mb-2 text-[var(--paperme-primary)]">
+                    1. Chọn loại mẫu giấy
+                  </h3>
+                  <p className="text-[var(--paperme-text-muted)]">
+                    Khám phá hơn 50 mẫu giấy phong phú: kẻ ngang, ô ly tiểu học Seyes, chấm bi Dot grid,
+                    khuông nhạc TAB, lưới vẽ 3D Isometric, phối cảnh, sơ đồ tư duy Mindmap, giấy Cornell notes,
+                    luyện chữ Calligraphy, thời khóa biểu và sổ tay To-Do.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-lg bg-[var(--paperme-bg)] border border-[var(--paperme-border)]">
+                  <h3 className="font-bold text-base mb-2 text-[var(--paperme-primary)]">
+                    2. Khổ giấy & Tùy biến kích thước
+                  </h3>
+                  <p className="text-[var(--paperme-text-muted)]">
+                    Hỗ trợ đầy đủ các khổ giấy tiêu chuẩn: <strong>A4, A5, A3, B4, B5, Letter, Legal</strong> hoặc
+                    nhập kích thước tùy chọn theo chuẩn milimet (mm) chính xác tuyệt đối.
+                  </p>
+                </div>
               </div>
 
-              <div className="p-4 rounded-lg bg-[var(--paperme-bg)] border border-[var(--paperme-border)]">
-                <h3 className="font-bold text-base mb-2 text-[var(--paperme-primary)]">
-                  4. Xuất file & In ấn chất lượng cao
-                </h3>
-                <p className="text-[var(--paperme-text-muted)]">
-                  - <strong>Xuất PDF (300 DPI):</strong> Vector sắc nét, phù hợp in ấn công nghiệp.<br />
-                  - <strong>Xuất PNG / JPG:</strong> Lưu ảnh độ nét cao.<br />
-                  - <strong>Xuất DOCX:</strong> Nhúng trực tiếp vào Microsoft Word.<br />
-                  - <strong>Lưu ý khi in:</strong> Trong hộp thoại in của máy tính, chọn <em>Actual Size (100%)</em> để kích thước mm trên giấy in ra chính xác 100%.
-                </p>
+              <div className="space-y-4">
+                <div className="p-4 rounded-lg bg-[var(--paperme-bg)] border border-[var(--paperme-border)]">
+                  <h3 className="font-bold text-base mb-2 text-[var(--paperme-primary)]">
+                    3. Căn chỉnh lề & Đường kẻ
+                  </h3>
+                  <p className="text-[var(--paperme-text-muted)]">
+                    Tùy chỉnh khoảng cách dòng (spacing mm), độ đậm nét vẽ (lineWidth mm), màu sắc nét vẽ theo
+                    bảng màu hoặc mã hex cá nhân. Tùy biến lề Trên, Dưới, Trái, Phải thuận tiện cho đóng gáy sổ.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-lg bg-[var(--paperme-bg)] border border-[var(--paperme-border)]">
+                  <h3 className="font-bold text-base mb-2 text-[var(--paperme-primary)]">
+                    4. Xuất file & In ấn chuẩn 100%
+                  </h3>
+                  <p className="text-[var(--paperme-text-muted)]">
+                    - <strong>Xuất PDF (300 DPI):</strong> Vector sắc nét, phù hợp in ấn công nghiệp.<br />
+                    - <strong>Xuất PNG / JPG:</strong> Lưu ảnh độ nét cao.<br />
+                    - <strong>Xuất DOCX:</strong> Nhúng trực tiếp vào Microsoft Word.<br />
+                    - <strong>Lưu ý khi in:</strong> Trong hộp thoại in của máy tính, chọn <em>Actual Size (100%)</em> để kích thước milimet in ra giấy chính xác 100%.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -537,81 +567,83 @@ img { width: ${dims.widthMm}mm; height: ${dims.heightMm}mm; }
 
       {/* TAB CONTENT: PHIÊN BẢN & TÁC GIẢ (ABOUT) */}
       {activeTab === 'about' && (
-        <div className="max-w-3xl mx-auto w-full p-6 my-6 bg-[var(--paperme-card)] rounded-xl border border-[var(--paperme-border)] shadow-sm text-sm">
-          <div className="flex justify-between items-center mb-6 border-b border-[var(--paperme-border)] pb-4">
-            <h2 className="text-xl font-bold flex items-center gap-2">
-              ℹ️ Thông tin phiên bản & Tác giả
-            </h2>
-            <span className="text-xs font-mono px-2.5 py-1 rounded bg-[var(--paperme-primary-light)] text-[var(--paperme-primary)] font-bold">
-              v{NSN_APP_META.version}
-            </span>
-          </div>
+        <div className="flex-1 overflow-auto p-6 bg-[var(--paperme-bg)]">
+          <div className="max-w-3xl mx-auto w-full p-6 bg-[var(--paperme-card)] rounded-xl border border-[var(--paperme-border)] shadow-sm text-sm">
+            <div className="flex justify-between items-center mb-6 border-b border-[var(--paperme-border)] pb-4">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                ℹ️ Thông tin phiên bản & Tác giả
+              </h2>
+              <span className="text-xs font-mono px-2.5 py-1 rounded bg-[var(--paperme-primary-light)] text-[var(--paperme-primary)] font-bold">
+                v{NSN_APP_META.version}
+              </span>
+            </div>
 
-          <table className="w-full mb-6 text-sm border-collapse">
-            <tbody>
-              <tr className="border-b border-[var(--paperme-border)]">
-                <td className="py-2 font-bold w-1/3">Ứng dụng</td>
-                <td className="py-2">{NSN_APP_META.name}</td>
-              </tr>
-              <tr className="border-b border-[var(--paperme-border)]">
-                <td className="py-2 font-bold">Mã tiện ích</td>
-                <td className="py-2 font-mono">{NSN_APP_META.appCode}</td>
-              </tr>
-              <tr className="border-b border-[var(--paperme-border)]">
-                <td className="py-2 font-bold">Tác giả</td>
-                <td className="py-2 font-semibold text-[var(--paperme-primary)]">
-                  {NSN_APP_META.author}
-                </td>
-              </tr>
-              <tr className="border-b border-[var(--paperme-border)]">
-                <td className="py-2 font-bold">Múi giờ phát hành</td>
-                <td className="py-2">GMT+7 ({NSN_APP_META.timezone})</td>
-              </tr>
-              <tr className="border-b border-[var(--paperme-border)]">
-                <td className="py-2 font-bold">GitHub Repository</td>
-                <td className="py-2">
-                  <a
-                    href={NSN_APP_META.github}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[var(--paperme-primary)] underline"
-                  >
-                    {NSN_APP_META.github}
-                  </a>
-                </td>
-              </tr>
-              <tr className="border-b border-[var(--paperme-border)]">
-                <td className="py-2 font-bold">Địa chỉ Web Online</td>
-                <td className="py-2">
-                  <a
-                    href={NSN_APP_META.liveUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[var(--paperme-accent)] underline font-semibold"
-                  >
-                    {NSN_APP_META.liveUrl}
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+            <table className="w-full mb-6 text-sm border-collapse">
+              <tbody>
+                <tr className="border-b border-[var(--paperme-border)]">
+                  <td className="py-2.5 font-bold w-1/3 text-[var(--paperme-text-muted)]">Ứng dụng</td>
+                  <td className="py-2.5 font-bold">{NSN_APP_META.name}</td>
+                </tr>
+                <tr className="border-b border-[var(--paperme-border)]">
+                  <td className="py-2.5 font-bold text-[var(--paperme-text-muted)]">Mã ứng dụng</td>
+                  <td className="py-2.5 font-mono font-bold text-[var(--paperme-primary)]">{NSN_APP_META.appCode}</td>
+                </tr>
+                <tr className="border-b border-[var(--paperme-border)]">
+                  <td className="py-2.5 font-bold text-[var(--paperme-text-muted)]">Tác giả</td>
+                  <td className="py-2.5 font-semibold text-[var(--paperme-primary)]">
+                    {NSN_APP_META.author}
+                  </td>
+                </tr>
+                <tr className="border-b border-[var(--paperme-border)]">
+                  <td className="py-2.5 font-bold text-[var(--paperme-text-muted)]">Múi giờ phát hành</td>
+                  <td className="py-2.5">GMT+7 ({NSN_APP_META.timezone})</td>
+                </tr>
+                <tr className="border-b border-[var(--paperme-border)]">
+                  <td className="py-2.5 font-bold text-[var(--paperme-text-muted)]">GitHub Repository</td>
+                  <td className="py-2.5">
+                    <a
+                      href={NSN_APP_META.github}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[var(--paperme-primary)] underline"
+                    >
+                      {NSN_APP_META.github}
+                    </a>
+                  </td>
+                </tr>
+                <tr className="border-b border-[var(--paperme-border)]">
+                  <td className="py-2.5 font-bold text-[var(--paperme-text-muted)]">Địa chỉ Web Online</td>
+                  <td className="py-2.5">
+                    <a
+                      href={NSN_APP_META.liveUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[var(--paperme-accent)] underline font-semibold"
+                    >
+                      {NSN_APP_META.liveUrl}
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
-          <div className="mb-6">
-            <h3 className="font-bold text-base mb-3">Lịch sử thay đổi (Changelog)</h3>
-            <div className="space-y-4">
-              {NSN_APP_META.changelog.map((log) => (
-                <div key={log.version} className="p-4 rounded-lg bg-[var(--paperme-bg)] border border-[var(--paperme-border)]">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-bold text-[var(--paperme-primary)]">Phiên bản {log.version}</span>
-                    <span className="text-xs text-[var(--paperme-text-muted)]">{log.date}</span>
+            <div className="mb-6">
+              <h3 className="font-bold text-base mb-3">Lịch sử thay đổi (Changelog)</h3>
+              <div className="space-y-4">
+                {NSN_APP_META.changelog.map((log) => (
+                  <div key={log.version} className="p-4 rounded-lg bg-[var(--paperme-bg)] border border-[var(--paperme-border)]">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-bold text-[var(--paperme-primary)]">Phiên bản {log.version}</span>
+                      <span className="text-xs text-[var(--paperme-text-muted)]">{log.date}</span>
+                    </div>
+                    <ul className="list-disc pl-5 space-y-1 text-xs text-[var(--paperme-text-muted)]">
+                      {log.changes.map((c, i) => (
+                        <li key={i}>{c}</li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="list-disc pl-5 space-y-1 text-xs text-[var(--paperme-text-muted)]">
-                    {log.changes.map((c, i) => (
-                      <li key={i}>{c}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -619,127 +651,131 @@ img { width: ${dims.widthMm}mm; height: ${dims.heightMm}mm; }
 
       {/* TAB CONTENT: MỜI CÀ PHÊ (COFFEE) */}
       {activeTab === 'coffee' && (
-        <div className="max-w-md mx-auto w-full p-6 my-6 bg-[var(--paperme-card)] rounded-2xl border border-[var(--paperme-border)] shadow-md text-center">
-          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-2xl">
-            ☕
-          </div>
-          <h2 className="text-xl font-bold mb-2">{NSN_APP_META.coffee.title}</h2>
-          <p className="text-xs text-[var(--paperme-text-muted)] mb-5 px-4">
-            {NSN_APP_META.coffee.blurb}
-          </p>
+        <div className="flex-1 overflow-auto p-6 bg-[var(--paperme-bg)] flex items-center justify-center">
+          <div className="max-w-md mx-auto w-full p-6 bg-[var(--paperme-card)] rounded-2xl border border-[var(--paperme-border)] shadow-md text-center">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-2xl">
+              ☕
+            </div>
+            <h2 className="text-xl font-bold mb-2">{NSN_APP_META.coffee.title}</h2>
+            <p className="text-xs text-[var(--paperme-text-muted)] mb-5 px-4">
+              {NSN_APP_META.coffee.blurb}
+            </p>
 
-          <div className="p-4 rounded-xl bg-[var(--paperme-bg)] border border-[var(--paperme-border)] mb-5">
-            <div className="flex justify-center mb-4">
-              <img
-                src={`${basePath}/docs/coffee-qr.jpg`}
-                alt={NSN_APP_META.coffee.qrAlt}
-                width={180}
-                height={180}
-                className="rounded-lg shadow-sm border border-slate-200"
-              />
+            <div className="p-4 rounded-xl bg-[var(--paperme-bg)] border border-[var(--paperme-border)] mb-5">
+              <div className="flex justify-center mb-4">
+                <img
+                  src={`${basePath}/docs/coffee-qr.jpg`}
+                  alt={NSN_APP_META.coffee.qrAlt}
+                  width={180}
+                  height={180}
+                  className="rounded-lg shadow-sm border border-slate-200"
+                />
+              </div>
+
+              <table className="w-full text-xs text-left border-collapse">
+                <tbody>
+                  <tr className="border-b border-[var(--paperme-border)]">
+                    <td className="py-2.5 font-bold text-[var(--paperme-text-muted)]">Chủ TK</td>
+                    <td className="py-2.5 font-bold text-right text-[var(--paperme-primary)]">
+                      {NSN_APP_META.coffee.accountName}
+                    </td>
+                  </tr>
+                  <tr className="border-b border-[var(--paperme-border)]">
+                    <td className="py-2.5 font-bold text-[var(--paperme-text-muted)]">Số TK</td>
+                    <td className="py-2.5 font-mono font-bold text-right flex items-center justify-end gap-2">
+                      <span className="text-sm">{NSN_APP_META.coffee.accountNumber}</span>
+                      <button
+                        onClick={copyAccountNumber}
+                        className="px-2 py-0.5 rounded text-[10px] bg-[var(--paperme-primary)] text-white hover:opacity-90 transition"
+                      >
+                        {copiedStk ? 'Đã sao chép!' : 'Sao chép'}
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2.5 font-bold text-[var(--paperme-text-muted)]">Ngân hàng</td>
+                    <td className="py-2.5 text-right">{NSN_APP_META.coffee.bank}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
-            <table className="w-full text-xs text-left border-collapse">
-              <tbody>
-                <tr className="border-b border-[var(--paperme-border)]">
-                  <td className="py-2 font-bold text-[var(--paperme-text-muted)]">Chủ TK</td>
-                  <td className="py-2 font-bold text-right text-[var(--paperme-primary)]">
-                    {NSN_APP_META.coffee.accountName}
-                  </td>
-                </tr>
-                <tr className="border-b border-[var(--paperme-border)]">
-                  <td className="py-2 font-bold text-[var(--paperme-text-muted)]">Số TK</td>
-                  <td className="py-2 font-mono font-bold text-right flex items-center justify-end gap-2">
-                    <span className="text-sm">{NSN_APP_META.coffee.accountNumber}</span>
-                    <button
-                      onClick={copyAccountNumber}
-                      className="px-2 py-0.5 rounded text-[10px] bg-[var(--paperme-primary)] text-white hover:opacity-90 transition"
-                    >
-                      {copiedStk ? 'Đã sao chép!' : 'Sao chép'}
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-bold text-[var(--paperme-text-muted)]">Ngân hàng</td>
-                  <td className="py-2 text-right">{NSN_APP_META.coffee.bank}</td>
-                </tr>
-              </tbody>
-            </table>
+            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
+              {NSN_APP_META.coffee.thanks}
+            </p>
           </div>
-
-          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
-            {NSN_APP_META.coffee.thanks}
-          </p>
         </div>
       )}
 
       {/* TAB CONTENT: THƯ VIỆN MẪU (TEMPLATES OVERVIEW) */}
       {activeTab === 'templates' && (
-        <div className="max-w-5xl mx-auto w-full p-6 my-6 bg-[var(--paperme-card)] rounded-xl border border-[var(--paperme-border)] shadow-sm">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-[var(--paperme-border)] pb-4">
-            <div>
-              <h2 className="text-xl font-bold flex items-center gap-2">
-                📚 Thư viện 50+ Mẫu Giấy In Chất Lượng Cao
-              </h2>
-              <p className="text-xs text-[var(--paperme-text-muted)] mt-1">
-                Nhấp vào mẫu bất kỳ để tải vào bàn thiết kế và tùy biến thông số mm
-              </p>
-            </div>
-            <div className="search-container !w-64 !m-0">
-              <input
-                type="text"
-                className="search-input"
-                placeholder="Tìm mẫu nhanh..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <div className="search-icon-box">
-                <Icon name="search" />
+        <div className="flex-1 overflow-auto p-6 bg-[var(--paperme-bg)]">
+          <div className="max-w-5xl mx-auto w-full p-6 bg-[var(--paperme-card)] rounded-xl border border-[var(--paperme-border)] shadow-sm">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-[var(--paperme-border)] pb-4">
+              <div>
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  📚 Thư viện 50+ Mẫu Giấy In Chất Lượng Cao
+                </h2>
+                <p className="text-xs text-[var(--paperme-text-muted)] mt-1">
+                  Nhấp vào mẫu bất kỳ để tải vào bàn thiết kế và tùy biến thông số mm
+                </p>
+              </div>
+              <div className="search-container !w-64 !m-0">
+                <input
+                  type="text"
+                  className="search-input"
+                  placeholder="Tìm mẫu nhanh..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <div className="search-icon-box">
+                  <Icon name="search" />
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="space-y-6">
-            {Object.keys(templateGroups).map((grp) => {
-              const grpLabel = t[`group${grp.charAt(0).toUpperCase() + grp.slice(1)}`] || grp;
-              return (
-                <div key={grp}>
-                  <h3 className="text-sm font-extrabold uppercase tracking-wider text-[var(--paperme-primary)] mb-3 pb-1 border-b border-[var(--paperme-border)]">
-                    {grpLabel} ({templateGroups[grp].length})
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                    {templateGroups[grp].map((tpl) => (
-                      <button
-                        key={tpl.id}
-                        className={`p-3 rounded-xl border text-left transition flex flex-col items-center justify-center gap-2.5 hover:border-[var(--paperme-primary)] hover:shadow-sm ${
-                          settings.paperType === tpl.id
-                            ? 'border-[var(--paperme-primary)] bg-[var(--paperme-primary-light)]'
-                            : 'border-[var(--paperme-border)] bg-[var(--paperme-bg)]'
-                        }`}
-                        onClick={() => selectTemplate(tpl)}
-                      >
-                        <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-[var(--paperme-card)] border border-[var(--paperme-border)] text-[var(--paperme-primary)]">
-                          <Icon name={tpl.icon} className="w-6 h-6" />
-                        </div>
-                        <span className="text-xs font-semibold text-center line-clamp-2">
-                          {t[tpl.key] || tpl.key}
-                        </span>
-                      </button>
-                    ))}
+            <div className="space-y-6">
+              {Object.keys(templateGroups).map((grp) => {
+                const grpLabel = t[`group${grp.charAt(0).toUpperCase() + grp.slice(1)}`] || grp;
+                return (
+                  <div key={grp}>
+                    <h3 className="text-sm font-extrabold uppercase tracking-wider text-[var(--paperme-primary)] mb-3 pb-1 border-b border-[var(--paperme-border)]">
+                      {grpLabel} ({templateGroups[grp].length})
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                      {templateGroups[grp].map((tpl) => (
+                        <button
+                          key={tpl.id}
+                          className={`p-3 rounded-xl border text-left transition flex flex-col items-center justify-center gap-2.5 hover:border-[var(--paperme-primary)] hover:shadow-sm ${
+                            settings.paperType === tpl.id
+                              ? 'border-[var(--paperme-primary)] bg-[var(--paperme-primary-light)]'
+                              : 'border-[var(--paperme-border)] bg-[var(--paperme-bg)]'
+                          }`}
+                          onClick={() => selectTemplate(tpl)}
+                        >
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-[var(--paperme-card)] border border-[var(--paperme-border)] text-[var(--paperme-primary)]">
+                            <Icon name={tpl.icon} className="w-6 h-6" />
+                          </div>
+                          <span className="text-xs font-semibold text-center line-clamp-2">
+                            {t[tpl.key] || tpl.key}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
 
       {/* TAB CONTENT: MAIN CUSTOM DESIGNER */}
       {activeTab === 'custom' && (
-        <div className="app-container flex-1">
+        <div className="app-container flex-1 min-h-0 overflow-hidden">
           {/* Left Sidebar: Controls & Settings */}
-          <aside className="editor-sidebar">
-            <div className="sidebar-scroll-content">
+          <aside className="editor-sidebar flex-shrink-0 h-full overflow-hidden flex flex-col">
+            <div className="sidebar-scroll-content flex-1 overflow-y-auto">
               {/* Quick Export Cards */}
               <section className="sidebar-group">
                 <div className="sidebar-group-header">
@@ -1050,7 +1086,7 @@ img { width: ${dims.widthMm}mm; height: ${dims.heightMm}mm; }
           </aside>
 
           {/* Center: Canvas Workspace Preview */}
-          <main className="preview-canvas-area relative flex flex-col flex-1 overflow-hidden">
+          <main className="preview-canvas-area relative flex-1 flex flex-col min-h-0 overflow-hidden">
             {/* Floating background decorative icons */}
             <div className="bg-deco bg-deco-1">
               <Icon name="ruler" />
@@ -1066,7 +1102,7 @@ img { width: ${dims.widthMm}mm; height: ${dims.heightMm}mm; }
             </div>
 
             {/* Canvas Control Header */}
-            <div className="canvas-control-header">
+            <div className="canvas-control-header flex-shrink-0">
               {/* Undo / Redo */}
               <div className="history-controls">
                 <button
@@ -1154,40 +1190,86 @@ img { width: ${dims.widthMm}mm; height: ${dims.heightMm}mm; }
               </div>
             </div>
 
-            {/* Paper Canvas Scroll Area */}
-            <div className="paper-scroll-wrapper relative flex-1 flex items-center justify-center p-8 overflow-auto">
+            {/* Paper Canvas Scroll Area with Centered Bounding Box */}
+            <div className="paper-scroll-wrapper flex-1 min-h-0 overflow-auto p-8 relative flex items-center justify-center">
               <div
-                className="ruler-wrapper relative"
+                className="ruler-wrapper"
                 id="paper-ruler-wrapper"
                 style={{
-                  transform: `scale(${zoom / 100})`,
-                  transformOrigin: 'center center',
-                  transition: 'transform 0.15s ease-out',
+                  width: `${wrapperWidth}px`,
+                  height: `${wrapperHeight}px`,
+                  minWidth: `${wrapperWidth}px`,
+                  minHeight: `${wrapperHeight}px`,
+                  margin: 'auto',
+                  position: 'relative',
+                  flexShrink: 0,
+                  display: 'block',
                 }}
               >
-                <div className="ruler-container relative" id="paper-ruler-container">
-                  <canvas ref={canvasRef} id="design-canvas" className="preview-canvas-element" />
+                <div
+                  className="ruler-container"
+                  id="paper-ruler-container"
+                  style={{
+                    width: `${canvasDims.width}px`,
+                    height: `${canvasDims.height}px`,
+                    position: 'absolute',
+                    left: '50%',
+                    top: '50%',
+                    transform: `translate(-50%, -50%) scale(${scale})`,
+                    transformOrigin: 'center center',
+                    boxShadow: '0 12px 35px rgba(0, 0, 0, 0.12)',
+                    borderRadius: '4px',
+                    backgroundColor: '#ffffff',
+                  }}
+                >
+                  <canvas ref={canvasRef} id="design-canvas" className="preview-canvas-element block" />
                 </div>
               </div>
             </div>
 
-            {/* Canvas Bottom Status Bar */}
-            <div className="canvas-status-bar">
-              <span className="status-size-info font-medium" style={{ color: statusMessage ? 'var(--paperme-accent)' : undefined }}>
-                {statusMessage || `${sizeLabel} · ${orientationLabel} · ${templateNameLabel}`}
-              </span>
-              <span className="status-lines-info font-medium">
-                {t.linesCount || 'Số dòng'}: {linesCount} {t.lines || 'dòng'}
-              </span>
+            {/* Canvas Bottom Status Bar with NSN metadata */}
+            <div className="canvas-status-bar flex-shrink-0 flex items-center justify-between px-6 py-2 border-t border-[var(--paperme-border)] bg-[var(--paperme-card)] text-xs text-[var(--paperme-text-muted)]">
+              <div className="flex items-center gap-3">
+                <span className="status-size-info font-medium" style={{ color: statusMessage ? 'var(--paperme-accent)' : undefined }}>
+                  {statusMessage || `${sizeLabel} · ${orientationLabel} · ${templateNameLabel}`}
+                </span>
+                <span className="status-lines-info font-medium border-l border-[var(--paperme-border)] pl-3">
+                  {t.linesCount || 'Số dòng'}: {linesCount} {t.lines || 'dòng'}
+                </span>
+              </div>
+
+              <div className="hidden sm:flex items-center gap-4">
+                <span>
+                  <strong>NsN_GiayIn</strong> · v{NSN_APP_META.version} · {NSN_APP_META.authorShort}
+                </span>
+                <button
+                  onClick={() => setActiveTab('guide')}
+                  className="hover:text-[var(--paperme-primary)] underline"
+                >
+                  Hướng dẫn
+                </button>
+                <button
+                  onClick={() => setActiveTab('about')}
+                  className="hover:text-[var(--paperme-primary)] underline"
+                >
+                  Phiên bản
+                </button>
+                <button
+                  onClick={() => setActiveTab('coffee')}
+                  className="hover:text-amber-600 font-bold"
+                >
+                  ☕ Mời cà phê
+                </button>
+              </div>
             </div>
           </main>
 
           {/* Right Sidebar: Categorised Template Gallery */}
-          <aside className="template-sidebar-right">
-            <div className="sidebar-right-header">
+          <aside className="template-sidebar-right flex-shrink-0 h-full overflow-hidden flex flex-col">
+            <div className="sidebar-right-header flex-shrink-0">
               <span className="font-bold text-sm tracking-wide">{t.templatesMenu || 'Thư viện mẫu'}</span>
             </div>
-            <div className="template-grid-wrapper p-3">
+            <div className="template-grid-wrapper flex-1 overflow-y-auto p-3">
               {Object.keys(templateGroups).map((grp) => {
                 const grpLabel = t[`group${grp.charAt(0).toUpperCase() + grp.slice(1)}`] || grp;
                 return (
@@ -1218,54 +1300,6 @@ img { width: ${dims.widthMm}mm; height: ${dims.heightMm}mm; }
           </aside>
         </div>
       )}
-
-      {/* NSN APP STANDARD FOOTER */}
-      <footer className="nsn-footer border-t border-[var(--paperme-border)] bg-[var(--paperme-card)] py-3 px-6 text-xs text-[var(--paperme-text-muted)] flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <strong className="text-[var(--paperme-text)]">{NSN_APP_META.name}</strong>
-          <span>· v{NSN_APP_META.version}</span>
-          <span>· {NSN_APP_META.author}</span>
-          <span className="hidden sm:inline-block">· GMT+7</span>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => {
-              playClickSound();
-              setActiveTab('guide');
-            }}
-            className="hover:text-[var(--paperme-primary)] underline transition"
-          >
-            Hướng dẫn
-          </button>
-          <button
-            onClick={() => {
-              playClickSound();
-              setActiveTab('about');
-            }}
-            className="hover:text-[var(--paperme-primary)] underline transition"
-          >
-            Lịch sử
-          </button>
-          <button
-            onClick={() => {
-              playClickSound();
-              setActiveTab('coffee');
-            }}
-            className="hover:text-amber-600 font-semibold transition"
-          >
-            ☕ Mời cà phê
-          </button>
-          <a
-            href={NSN_APP_META.github}
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-[var(--paperme-primary)] underline transition"
-          >
-            GitHub
-          </a>
-        </div>
-      </footer>
     </div>
   );
 };

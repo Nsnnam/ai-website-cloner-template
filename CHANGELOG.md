@@ -1,6 +1,19 @@
 # Lịch sử phiên bản (Changelog)
 
-Toàn bộ các thay đổi đáng chú ý của dự án **CuongPaPer (AI Website Cloner Template)** được lưu trữ chi tiết tại đây. Định dạng tuân thủ quy chuẩn [NSN App Standard](https://github.com/Nsnnam/nsn-app-standard).
+Toàn bộ các thay đổi đáng chú ý của dự án **NsN_GiayIn (AI Website Cloner Template)** được lưu trữ chi tiết tại đây. Định dạng tuân thủ quy chuẩn [NSN App Standard](https://github.com/Nsnnam/nsn-app-standard).
+
+---
+
+## [1.0.1] - 2026-11-01 (GMT+7)
+
+### Đã sửa & Cải tiến
+- **Đổi tên thương hiệu:** Đổi tên toàn bộ sản phẩm thành **NsN_GiayIn** (logo, header, tab phiên bản, tên file tải về, định danh `localStorage`).
+- **Sửa lỗi hiển thị tiếng Việt trên Canvas:** Khắc phục triệt để lỗi mã hóa ký tự (mojibake) trên 22 mẫu giấy vẽ canvas (`draw-paper.js`), đảm bảo hiển thị đúng dấu tiếng Việt (*Ngày, Ý tưởng trung tâm, Lỗi sai, Bài học rút ra, Tranh vẽ...*).
+- **Sửa lỗi giấy canvas bị lùi xuống đáy màn hình:**
+  - Khóa chiều cao `#app` vừa khớp viewport (`h-screen max-h-screen overflow-hidden`).
+  - Cố định kích thước pixel tính toán (`wrapperWidth`, `wrapperHeight`) cho khung bọc thước đo `paper-ruler-wrapper` dựa trên kích thước thật của canvas và tỷ lệ zoom.
+  - Căn giữa trang giấy tuyệt đối bằng `left: 50%; top: 50%; transform: translate(-50%, -50%)`.
+- **Tối ưu font chữ:** Bổ sung cơ chế `document.fonts.ready` để kích hoạt vẽ lại canvas ngay khi font chữ 'Nunito' tải xong, tránh hiện tượng rơi về font hệ thống gây biến dạng chữ.
 
 ---
 

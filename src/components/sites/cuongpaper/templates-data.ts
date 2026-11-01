@@ -949,7 +949,7 @@ export const paperTemplates: PaperTemplateConfig[] = [
 
 export const translations: Record<'vi' | 'en', Record<string, string>> = {
   vi: {
-  "appName": "CuongPaPer",
+  "appName": "NsN_GiayIn",
   "appSubtitle": "Thiết kế & tải mẫu giấy in trong vài giây",
   "templatesMenu": "Thư viện mẫu",
   "myPapersMenu": "Giấy của tôi",
@@ -1054,7 +1054,7 @@ export const translations: Record<'vi' | 'en', Record<string, string>> = {
   "vocabularyStudy": "Sổ học từ vựng (Vocabulary)"
 },
   en: {
-  "appName": "CuongPaPer",
+  "appName": "NsN_GiayIn",
   "appSubtitle": "Create beautiful papers in seconds",
   "templatesMenu": "Templates",
   "myPapersMenu": "My Papers",

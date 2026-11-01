@@ -6,7 +6,7 @@
 |---|---|
 | **Họ và tên** | Nguyễn Sơn Nam (Nsnnam / NamNS / NSN) |
 | **GitHub** | [https://github.com/Nsnnam](https://github.com/Nsnnam) |
-| **Sản phẩm** | CuongPaPer - Thiết kế & Tải Mẫu Giấy In Chất Lượng Cao |
+| **Sản phẩm** | NsN_GiayIn - Thiết kế & Tải Mẫu Giấy In Chất Lượng Cao |
 | **Chuẩn áp dụng** | NSN App Standard |
 
 ## Ghi nhận nguồn cảm hứng

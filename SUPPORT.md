@@ -4,7 +4,7 @@
 
 ## ☕ Mời cà phê
 
-Nếu bạn thấy **CuongPaPer - Thiết kế & In Mẫu Giấy Chất Lượng Cao** hữu ích, hãy ủng hộ tác giả một tách cà phê nhé!
+Nếu bạn thấy **NsN_GiayIn - Thiết kế & In Mẫu Giấy Chất Lượng Cao** hữu ích, hãy ủng hộ tác giả một tách cà phê nhé!
 
 Trong ứng dụng: Tab **☕ Mời cà phê** trên thanh tiêu đề hoặc ở chân trang footer.
 

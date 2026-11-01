@@ -34,5 +34,5 @@ export function getGMT7TimeString(d: Date = new Date()): string {
 export function getExportFileName(paperType: string, ext: string): string {
   const time = getGMT7TimeString();
   const date = getGMT7DateString();
-  return `${time}_${paperType}_${date}.${ext}`;
+  return `${time}_NsN_GiayIn_${paperType}_${date}.${ext}`;
 }

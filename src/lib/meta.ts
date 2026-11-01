@@ -1,6 +1,6 @@
 /**
  * NSN App Standard — Meta Object
- * Ứng dụng: CuongPaPer - Thiết kế & In Mẫu Giấy Chất Lượng Cao
+ * Ứng dụng: NsN_GiayIn - Thiết Kế & Tải Mẫu Giấy In Chất Lượng Cao
  */
 
 export interface ChangelogItem {
@@ -37,9 +37,9 @@ export interface AppMeta {
 }
 
 export const NSN_APP_META: AppMeta = {
-  name: "CuongPaPer - Thiết kế & Tải Mẫu Giấy In Chất Lượng Cao",
-  appCode: "CUONGPAPER",
-  version: "1.0.0",
+  name: "NsN_GiayIn - Thiết kế & Tải Mẫu Giấy In Chất Lượng Cao",
+  appCode: "NSN_GIAYIN",
+  version: "1.0.1",
   date: "2026-11-01",
   author: "Nguyễn Sơn Nam (Nsnnam)",
   authorShort: "NSN",
@@ -61,15 +61,23 @@ export const NSN_APP_META: AppMeta = {
   },
   changelog: [
     {
+      version: "1.0.1",
+      date: "2026-11-01",
+      changes: [
+        "Đổi tên nhận diện thương hiệu thành NsN_GiayIn",
+        "Khắc phục triệt để lỗi hiển thị giấy bị lùi xuống đáy trang (sửa cấu trúc layout wrapper & canvas transform)",
+        "Sửa toàn bộ lỗi font tiếng Việt và lỗi hiển thị ký tự có dấu trên bản vẽ Canvas",
+        "Tối ưu giao diện toàn màn hình máy tính và thiết bị di động, loại bỏ thanh cuộn dọc ngoài ý muốn",
+        "Cập nhật tên file xuất chuẩn GMT+7: HHmmss_NsN_GiayIn_yyyyMMdd.ext",
+      ],
+    },
+    {
       version: "1.0.0",
       date: "2026-11-01",
       changes: [
         "Khởi tạo ứng dụng theo chuẩn NSN App Standard",
-        "Clone và tái lập 1:1 hơn 50 mẫu giấy in từ hanmmanhcuong.io.vn/mau-giay-in",
-        "Tích hợp xuất file PDF vector 300 DPI, ảnh PNG/JPG sắc nét, xuất Word DOCX và In trực tiếp",
-        "Tích hợp thước đo milimet, công cụ phóng to/thu nhỏ, hoàn tác/làm lại và tìm kiếm mẫu giấy",
-        "Bổ sung Tab Hướng dẫn, Phiên bản, Tác giả và Mời cà phê BIDV Nguyễn Sơn Nam",
-        "Cấu hình tự động triển khai GitHub Pages trực tiếp tại nsnnam.github.io/ai-website-cloner-template",
+        "Tích hợp hơn 50 mẫu giấy in chất lượng cao",
+        "Hỗ trợ xuất PDF vector 300 DPI, ảnh PNG/JPG, xuất Word DOCX và In trực tiếp",
       ],
     },
   ],

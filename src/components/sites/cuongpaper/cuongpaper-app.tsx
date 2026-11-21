@@ -301,11 +301,131 @@ img { width: ${dims.widthMm}mm; height: ${dims.heightMm}mm; }
     }, 400);
   };
 
-  // Direct Print
-  const handlePrint = () => {
+  // Direct Print with 300 DPI high resolution and correct paper orientation
+  const handlePrint = useCallback(() => {
     playPrintSound();
-    window.print();
-  };
+    setStatusMessage(t.preparingPrint || 'Đang chuẩn bị bản in trực tiếp...');
+
+    setTimeout(() => {
+      try {
+        const offscreenCanvas = document.createElement('canvas');
+        renderPaper(offscreenCanvas, settings, 300, {
+          showMarginsGuide: false,
+          hideHeader: false,
+          lang,
+        });
+
+        const dims = calcPaperDimensions(
+          settings.paperSize,
+          settings.orientation,
+          300,
+          settings.customWidth,
+          settings.customHeight
+        );
+
+        const imgData = offscreenCanvas.toDataURL('image/png');
+
+        // Reuse or create hidden iframe for dedicated printing
+        let printFrame = document.getElementById('nsn-print-frame') as HTMLIFrameElement | null;
+        if (printFrame && printFrame.parentNode) {
+          printFrame.parentNode.removeChild(printFrame);
+        }
+        printFrame = document.createElement('iframe');
+        printFrame.id = 'nsn-print-frame';
+        printFrame.style.position = 'fixed';
+        printFrame.style.right = '0';
+        printFrame.style.bottom = '0';
+        printFrame.style.width = '0';
+        printFrame.style.height = '0';
+        printFrame.style.border = '0';
+        printFrame.style.visibility = 'hidden';
+        document.body.appendChild(printFrame);
+
+        const frameDoc = printFrame.contentWindow?.document || printFrame.contentDocument;
+        if (!frameDoc) {
+          window.print();
+          setStatusMessage('');
+          return;
+        }
+
+        frameDoc.open();
+        frameDoc.write(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8" />
+              <title>${settings.paperType} - In trực tiếp</title>
+              <style>
+                @page {
+                  size: ${dims.widthMm}mm ${dims.heightMm}mm;
+                  margin: 0;
+                }
+                * {
+                  margin: 0;
+                  padding: 0;
+                  box-sizing: border-box;
+                }
+                html, body {
+                  width: 100%;
+                  height: 100%;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  background: #ffffff;
+                  overflow: hidden;
+                }
+                img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: fill;
+                  display: block;
+                  image-rendering: -webkit-optimize-contrast;
+                }
+              </style>
+            </head>
+            <body>
+              <img id="print-sheet-img" src="${imgData}" alt="Mẫu giấy in" />
+            </body>
+          </html>
+        `);
+        frameDoc.close();
+
+        const img = frameDoc.getElementById('print-sheet-img') as HTMLImageElement;
+        const triggerPrint = () => {
+          try {
+            printFrame?.contentWindow?.focus();
+            printFrame?.contentWindow?.print();
+          } catch (e) {
+            console.error('Error invoking iframe print:', e);
+            window.print();
+          } finally {
+            setStatusMessage('');
+          }
+        };
+
+        if (img && !img.complete) {
+          img.onload = () => setTimeout(triggerPrint, 150);
+        } else {
+          setTimeout(triggerPrint, 150);
+        }
+      } catch (err) {
+        console.error('Error in handlePrint:', err);
+        window.print();
+        setStatusMessage('');
+      }
+    }, 150);
+  }, [settings, lang, t.preparingPrint]);
+
+  // Handle Ctrl+P / Cmd+P to trigger direct print
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
+        e.preventDefault();
+        handlePrint();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handlePrint]);
 
   // Copy STK
   const copyAccountNumber = () => {
